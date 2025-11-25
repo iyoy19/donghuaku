@@ -197,13 +197,13 @@ class ApiService {
 
   // TMDB endpoints
   async searchTMDB(query: string, type?: "movie" | "tv") {
-    const params = new URLSearchParams({ q: query });
+    const params = new URLSearchParams({ query });
     if (type) params.append("type", type);
-    return this.get<any>(`/api/tmdb/search?${params.toString()}`);
+    return this.get<any>(`/api/tmdb?${params.toString()}`);
   }
 
   async getTMDBData(type: "movie" | "tv", id: number) {
-    return this.get<any>(`/api/tmdb/${type}/${id}`);
+    return this.get<any>(`/api/tmdb?action=details&type=${type}&id=${id}`);
   }
 
   async syncFromTMDB(data: {
@@ -232,16 +232,16 @@ class ApiService {
   }
 
   async getTMDBCredits(type: "movie" | "tv", id: number) {
-    return this.get<any>(`/api/tmdb/${type}/${id}/credits`);
+    return this.get<any>(`/api/tmdb?action=credits&type=${type}&id=${id}`);
   }
 
   async getTMDBVideos(type: "movie" | "tv", id: number) {
-    return this.get<any>(`/api/tmdb/${type}/${id}/videos`);
+    return this.get<any>(`/api/tmdb?action=videos&type=${type}&id=${id}`);
   }
 
   async getTMDBEpisodeFull(tvId: number, season: number, episode: number) {
     return this.get<any>(
-      `/api/tmdb/tv/${tvId}/season/${season}/episode/${episode}`
+      `/api/tmdb?action=episode&tvId=${tvId}&season=${season}&episode=${episode}`
     );
   }
 
