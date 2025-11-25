@@ -70,7 +70,38 @@ Aplikasi akan berjalan di:
 
 ## 🌐 Vercel Deployment
 
-### 1. SPA Routing Setup
+### ⚠️ IMPORTANT: Vercel Serverless Architecture
+
+Vercel **tidak support Express server** yang terus berjalan. Oleh karena itu:
+
+- ❌ **TIDAK bisa** menjalankan `server/index.ts` di production
+- ✅ **HARUS** menggunakan Vercel serverless functions di folder `/api`
+
+### Architecture:
+
+```
+Development (localhost)
+├── Frontend: Vite + React Router → http://localhost:5175
+└── Backend: Express server → http://localhost:3001
+
+Production (Vercel)
+├── Frontend: SPA deployed di Vercel → https://yourapp.vercel.app
+└── API: Serverless functions di /api → /api/donghua, /api/tmdb/search, etc
+```
+
+### 1. API Endpoints di `/api` Folder
+
+Sudah ada serverless functions untuk:
+- `/api/donghua` - Get all donghua from database
+- `/api/tmdb/search` - Search TMDB
+- `/api/tmdb/[type]/[id]` - Get TMDB detail
+- `/api/tmdb/[type]/[id]/credits` - Get TMDB credits
+- `/api/tmdb/[type]/[id]/videos` - Get TMDB videos
+- `/api/health` - Health check
+
+Saat production, API calls ke `/api/...` akan secara otomatis route ke serverless functions.
+
+### 2. SPA Routing Setup
 
 Untuk aplikasi Single Page App (React Router), Vercel perlu mengarahkan semua request ke `index.html`. Ini sudah dikonfigurasi di `vercel.json`:
 
@@ -87,33 +118,33 @@ Untuk aplikasi Single Page App (React Router), Vercel perlu mengarahkan semua re
 
 Ini memastikan routes seperti `/admin`, `/detail/:id`, dll bekerja di Vercel.
 
-### 2. Push Code ke GitHub
+### 3. Push Code ke GitHub
 
 ```bash
 git add .
-git commit -m "Setup Neon + Vercel with SPA routing"
+git commit -m "Setup Neon + Vercel with serverless API"
 git push origin main
 ```
 
-### 3. Connect ke Vercel
+### 4. Connect ke Vercel
 
 1. Buka [Vercel Dashboard](https://vercel.com/dashboard)
 2. Click "Add New" → "Project"
 3. Import repository GitHub Anda
 4. Framework preset: Vite (akan terdeteksi otomatis)
 
-### 4. Environment Variables (PENTING! ⚠️)
+### 5. Environment Variables (PENTING! ⚠️)
 
 Di **Vercel Project Settings → Environment Variables**, tambahkan:
 
-| Key                 | Value                                       |
-| ------------------- | ------------------------------------------- |
-| `DATABASE_URL`      | `postgresql://neondb_owner:...` (dari Neon) |
-| `VITE_TMDB_API_KEY` | Your TMDB API key                           |
+| Key | Value |
+|-----|-------|
+| `DATABASE_URL` | `postgresql://neondb_owner:...` (dari Neon) |
+| `VITE_TMDB_API_KEY` | Your TMDB API key |
 
 ⚠️ **JANGAN gunakan secret references (@database_url)**. Paste langsung nilai aslinya!
 
-### 5. Verify vercel.json
+### 6. Verify vercel.json
 
 Pastikan `vercel.json` **TIDAK memiliki env section** dengan secret references:
 
@@ -143,19 +174,20 @@ Pastikan `vercel.json` **TIDAK memiliki env section** dengan secret references:
 }
 ```
 
-### 6. Build Settings
+### 7. Build Settings
 
 - **Build Command**: `npm run build`
 - **Output Directory**: `dist`
 - **Install Command**: `npm install`
 
-### 7. Deploy
+### 8. Deploy
 
 Click "Deploy" dan tunggu build selesai.
 
 Aplikasi akan live di domain Vercel (misalnya `https://yourproject.vercel.app`)
 
-- Routes akan langsung accessible: `/admin`, `/detail/:id`, `/search`, dll
+- Frontend routes akan langsung accessible: `/admin`, `/detail/:id`, `/search`, dll
+- API routes akan ke serverless functions: `/api/donghua`, `/api/tmdb/search`, etc
 - Database akan connect ke Neon production
 
 ## ✅ Testing
@@ -168,35 +200,53 @@ curl http://localhost:3001/health
 
 # Check database connection
 curl http://localhost:3001/api/test-db
+
+# Check API endpoints
+curl http://localhost:3001/api/donghua
+curl "http://localhost:3001/api/tmdb/search?q=demon%20slayer"
 ```
 
 ### Testing di Vercel (Production)
 
-Setelah deploy, test dengan mengakses endpoint debug:
+Setelah deploy, test dengan mengakses endpoint serverless:
 
-```
-https://yourproject.vercel.app/debug/db
+```bash
+# Check API donghua endpoint
+curl https://yourproject.vercel.app/api/donghua
+
+# Check TMDB search
+curl "https://yourproject.vercel.app/api/tmdb/search?q=demon%20slayer"
+
+# Check health
+curl https://yourproject.vercel.app/api/health
 ```
 
-**Expected Response:**
-
+**Expected Response untuk `/api/donghua`:**
+```json
+[
+  {
+    "id": 1,
+    "title": "Attack on Titan",
+    ...
+  }
+]
 ```
-✅ DB CONNECTED - Prisma + Neon working!
-```
 
-Jika mendapat error, berarti:
+Jika mendapat error atau HTML response:
 
 1. Environment variable `DATABASE_URL` belum di-set di Vercel
 2. DATABASE_URL masih punya secret reference (@database_url)
 3. Neon project sedang down atau connection pooler penuh
+4. Check Vercel deployment logs untuk error details
 
 ## 📝 Notes
 
 - **Development**: Backend server Express berjalan di port 3001, menghubung ke Neon
-- **Production (Vercel)**: Frontend di-deploy ke Vercel, menggunakan Neon database
+- **Production (Vercel)**: Frontend di-deploy ke Vercel (SPA), API menggunakan serverless functions
 - **SPA Routing**: `vercel.json` mengkonfigurasi rewrites untuk semua routes → `index.html`
-- **API Routes**: Vercel serverless functions di folder `/api` (sedang dalam development)
+- **API Routes**: Vercel serverless functions di folder `/api` untuk database dan TMDB calls
 - Prisma ORM menangani semua database operations dengan Neon connection pooling
+- Frontend otomatis akan call `/api/...` endpoints (route relative dari base URL)
 
 ## 🔗 Useful Resources
 

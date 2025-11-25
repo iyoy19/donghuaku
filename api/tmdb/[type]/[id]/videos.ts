@@ -26,6 +26,7 @@ export default async function handler(
   res: VercelResponse
 ) {
   setCorsHeaders(res);
+  res.setHeader("Content-Type", "application/json");
   if (handleOptions(req, res)) return;
 
   try {

@@ -102,17 +102,7 @@ class ApiService {
       throw new Error(errorMessage);
     }
 
-    // Check response content-type
-    const contentType = response.headers.get("content-type");
-    if (!contentType?.includes("application/json")) {
-      console.error("🔴 [API DEBUG] Invalid content-type:", {
-        url,
-        contentType,
-        hint: "Expected application/json but got " + contentType,
-      });
-      throw new Error("API returned invalid content-type. Expected JSON.");
-    }
-
+    // Try to parse as JSON, content-type header might be missing in some cases
     try {
       const data = await response.json();
       return data;
