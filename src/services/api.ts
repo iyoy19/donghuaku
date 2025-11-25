@@ -159,9 +159,7 @@ class ApiService {
   // Donghua endpoints
   async getAllDonghua(forceRefresh: boolean = false) {
     // Add timestamp to bypass cache if force refresh is needed
-    const endpoint = forceRefresh
-      ? `/donghua?_t=${Date.now()}`
-      : "/donghua";
+    const endpoint = forceRefresh ? `/donghua?_t=${Date.now()}` : "/donghua";
     return this.get<any[]>(endpoint);
   }
 
@@ -190,9 +188,7 @@ class ApiService {
     if (params.sortBy) queryParams.append("sortBy", params.sortBy);
 
     const queryString = queryParams.toString();
-    return this.get<any[]>(
-      `/search${queryString ? `?${queryString}` : ""}`
-    );
+    return this.get<any[]>(`/search${queryString ? `?${queryString}` : ""}`);
   }
 
   // TMDB endpoints
