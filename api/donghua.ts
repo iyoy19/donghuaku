@@ -16,7 +16,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Route 1: GET /api/donghua?type=episodes&id=123
     if (type === "episodes" && id) {
-      const idNum = Array.isArray(id) ? parseInt(id[0]) : parseInt(id as string);
+      const idNum = Array.isArray(id)
+        ? parseInt(id[0])
+        : parseInt(id as string);
       const episodes = await prisma.episode.findMany({
         where: { donghuaId: idNum },
         orderBy: { episodeNumber: "asc" },
@@ -63,7 +65,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       const donghuas = await prisma.donghua.findMany({
         where,
-        include: { genres: true, episodes: { orderBy: { episodeNumber: "asc" } } },
+        include: {
+          genres: true,
+          episodes: { orderBy: { episodeNumber: "asc" } },
+        },
         orderBy: { releaseDate: "desc", firstAirDate: "desc" },
         take: 20,
       });
@@ -77,7 +82,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (type === "toprated") {
       const donghuas = await prisma.donghua.findMany({
         where: { voteCount: { gte: 10 } },
-        include: { genres: true, episodes: { orderBy: { episodeNumber: "asc" } } },
+        include: {
+          genres: true,
+          episodes: { orderBy: { episodeNumber: "asc" } },
+        },
         orderBy: { voteAverage: "desc" },
         take: 20,
       });
@@ -94,7 +102,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           status: "ongoing",
           OR: [{ mediaType: "tv" }, { mediaType: "movie" }],
         },
-        include: { genres: true, episodes: { orderBy: { episodeNumber: "asc" } } },
+        include: {
+          genres: true,
+          episodes: { orderBy: { episodeNumber: "asc" } },
+        },
         orderBy: { voteAverage: "desc" },
         take: 12,
       });
@@ -106,10 +117,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Route 6: GET /api/donghua?id=123 (get by ID)
     if (id && !type) {
-      const idNum = Array.isArray(id) ? parseInt(id[0]) : parseInt(id as string);
+      const idNum = Array.isArray(id)
+        ? parseInt(id[0])
+        : parseInt(id as string);
       const donghua = await prisma.donghua.findUnique({
         where: { id: idNum },
-        include: { genres: true, episodes: { orderBy: { episodeNumber: "asc" } } },
+        include: {
+          genres: true,
+          episodes: { orderBy: { episodeNumber: "asc" } },
+        },
       });
       if (!donghua) {
         return res.status(404).json({ error: "Donghua not found" });
@@ -120,7 +136,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Route 7: GET /api/donghua (get all)
     const donghuas = await prisma.donghua.findMany({
-      include: { episodes: { orderBy: { episodeNumber: "asc" } }, genres: true },
+      include: {
+        episodes: { orderBy: { episodeNumber: "asc" } },
+        genres: true,
+      },
       orderBy: { createdAt: "desc" },
     });
     const donghuasWithStringStatus = donghuas.map((item: any) => {
