@@ -35,7 +35,7 @@ export default async function handler(
     // Enrich each donghua with status and released episodes count
     const enrichedDonghuas = await Promise.all(
       donghuasWithStringStatus.map((donghua) =>
-        enrichDonghuaData(donghua, true)
+        enrichDonghuaData(donghua)
       )
     );
 

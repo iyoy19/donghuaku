@@ -4,8 +4,7 @@ export const prisma = new PrismaClient();
 
 // Helper function to enrich donghua data
 export async function enrichDonghuaData(
-  donghua: any,
-  forceStatusCheck: boolean = false
+  donghua: any
 ): Promise<any> {
   try {
     // Count released episodes
