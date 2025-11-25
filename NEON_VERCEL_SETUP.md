@@ -70,22 +70,39 @@ Aplikasi akan berjalan di:
 
 ## 🌐 Vercel Deployment
 
-### 1. Push Code ke GitHub
+### 1. SPA Routing Setup
+
+Untuk aplikasi Single Page App (React Router), Vercel perlu mengarahkan semua request ke `index.html`. Ini sudah dikonfigurasi di `vercel.json`:
+
+```json
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+```
+
+Ini memastikan routes seperti `/admin`, `/detail/:id`, dll bekerja di Vercel.
+
+### 2. Push Code ke GitHub
 
 ```bash
 git add .
-git commit -m "Setup Neon + Vercel"
+git commit -m "Setup Neon + Vercel with SPA routing"
 git push origin main
 ```
 
-### 2. Connect ke Vercel
+### 3. Connect ke Vercel
 
 1. Buka [Vercel Dashboard](https://vercel.com/dashboard)
 2. Click "Add New" → "Project"
 3. Import repository GitHub Anda
 4. Framework preset: Vite (akan terdeteksi otomatis)
 
-### 3. Environment Variables
+### 4. Environment Variables
 
 Di Vercel Project Settings → Environment Variables, tambahkan:
 
@@ -94,15 +111,20 @@ DATABASE_URL = postgresql://...
 VITE_TMDB_API_KEY = your-api-key
 ```
 
-### 4. Build Settings
+### 5. Build Settings
 
 - **Build Command**: `npm run build`
 - **Output Directory**: `dist`
 - **Install Command**: `npm install`
 
-### 5. Deploy
+### 6. Deploy
 
 Click "Deploy" dan tunggu build selesai.
+
+Aplikasi akan live di domain Vercel (misalnya `https://yourproject.vercel.app`)
+
+- Routes akan langsung accessible: `/admin`, `/detail/:id`, `/search`, dll
+- Database akan connect ke Neon production
 
 ## ✅ Testing
 
@@ -132,6 +154,7 @@ curl http://localhost:3001/api/test-db
 
 - **Development**: Backend server Express berjalan di port 3001, menghubung ke Neon
 - **Production (Vercel)**: Frontend di-deploy ke Vercel, menggunakan Neon database
+- **SPA Routing**: `vercel.json` mengkonfigurasi rewrites untuk semua routes → `index.html`
 - **API Routes**: Vercel serverless functions di folder `/api` (sedang dalam development)
 - Prisma ORM menangani semua database operations dengan Neon connection pooling
 
@@ -140,8 +163,19 @@ curl http://localhost:3001/api/test-db
 - [Neon Documentation](https://neon.tech/docs)
 - [Vercel Deployment](https://vercel.com/docs)
 - [Prisma with Vercel](https://www.prisma.io/docs/guides/deployment/deployment-guides/deploying-to-vercel)
+- [React Router SPA](https://reactrouter.com/docs/en/v6)
 
 ## 🐛 Troubleshooting
+
+### `/admin` route not accessible di Vercel
+
+**Problem**: Mendapat 404 saat akses `https://yourapp.vercel.app/admin`
+
+**Solution**:
+
+- ✅ Sudah fixed dengan `vercel.json` rewrites
+- Pastikan file sudah di-push ke GitHub
+- Redeploy di Vercel (bisa manual atau tunggu push baru)
 
 ### ERR_CONNECTION_REFUSED
 
