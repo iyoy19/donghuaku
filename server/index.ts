@@ -2496,9 +2496,4 @@ app.post("/api/tmdb/sync", async (req, res) => {
     res.status(500).json(errorResponse);
   }
 });
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
-
 export default app;

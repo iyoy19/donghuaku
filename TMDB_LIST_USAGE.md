@@ -84,3 +84,4 @@ try {
 - List ID harus berupa list yang sudah dibuat di akun TMDB Anda
 - Endpoint ini berguna untuk menghindari duplikasi dengan mengecek list TMDB yang sudah dibuat sebelumnya
 
+

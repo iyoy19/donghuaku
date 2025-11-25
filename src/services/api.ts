@@ -1,4 +1,20 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+// Determine API URL based on environment
+const getApiUrl = (): string => {
+  // If VITE_API_URL is set, use it
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+
+  // For development, use localhost:3001
+  if (import.meta.env.DEV) {
+    return "http://localhost:3001";
+  }
+
+  // For production (Vercel), use relative path to /api
+  return "/api";
+};
+
+const API_URL = getApiUrl();
 
 class ApiService {
   private baseUrl: string;

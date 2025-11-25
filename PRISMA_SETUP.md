@@ -197,3 +197,61 @@ npm run db:migrate:deploy
 
 Ini akan menjalankan migration tanpa membuat migration file baru (untuk CI/CD).
 
+---
+
+## Menggunakan MongoDB Atlas dengan Prisma
+
+Proyek ini secara default menggunakan PostgreSQL, tetapi Anda bisa menghubungkan ke MongoDB Atlas untuk pengembangan.
+
+### Langkah konfigurasi:
+
+1. Di file `.env` sudah disiapkan variabel berikut:
+
+```env
+DATABASE_URL_POSTGRES="postgresql://username:password@host:port/database?schema=public"
+DATABASE_URL_MONGO="mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority"
+DATABASE_URL=$DATABASE_URL_POSTGRES
+```
+
+2. Variabel `DATABASE_URL` yang dipakai Prisma berada di `.env`, Anda bisa menggantinya secara manual ke:
+
+```env
+DATABASE_URL=$DATABASE_URL_MONGO
+```
+
+untuk menggunakan MongoDB Atlas.
+
+3. Jangan lupa untuk mengubah juga `provider` di `prisma/schema.prisma` menjadi:
+
+```prisma
+datasource db {
+  provider = "mongodb" // atau "postgresql" sesuai database yang dipakai
+  url      = env("DATABASE_URL")
+}
+```
+
+4. Setelah mengganti provider dan `DATABASE_URL`, jalankan ulang prisma generate dan migrate jika diperlukan:
+
+```bash
+npm run db:generate
+npm run db:migrate
+```
+
+atau untuk development gunakan push migration:
+
+```bash
+npm run db:push
+```
+
+### Catatan:
+
+- Swapping antara PostgreSQL dan MongoDB tidak otomatis, Anda harus mengubah konfigurasi secara manual di atas.
+- Prisma schema untuk MongoDB mungkin perlu penyesuaian model karena fitur MongoDB berbeda dengan SQL.
+- Data yang sudah ada pada satu database tidak dapat langsung dipakai di database lain tanpa migrasi data.
+
+---
+
+Jika ada pertanyaan lebih lanjut, silakan tanyakan.
+DATABASE_URL=$DATABASE_URL_MONGO
+DATABASE_URL=$DATABASE_URL_POSTGRES
+

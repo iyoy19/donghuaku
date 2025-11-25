@@ -1,32 +1,31 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-generator client {
-  provider = "prisma-client-js"
-}
+// Prisma Schema for DonghuaKu
+// Provider: PostgreSQL
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
 enum Status {
-  // TV Series statuses
-  upcoming // Series not yet aired / Movie not yet released
-  ongoing // Currently airing (returning series)
-  complete // Series ended / All episodes released
-  canceled // Series/Movie canceled
-  pilot // Only pilot episode exists
+  // TV & Movie statuses
+  upcoming
+  ongoing
+  complete
+  canceled
+  pilot
 
-  // Movie specific statuses
-  released // Movie has been released
-  rumored // Movie in rumor stage
-  planned // Officially planned
-  in_production // Currently in production
-  post_production // Post-production phase
+  // Movie specific
+  released
+  rumored
+  planned
+  in_production
+  post_production
 
-  // Fallback
-  unknown // Status unknown
+  unknown
 }
 
 model Donghua {
@@ -43,9 +42,9 @@ model Donghua {
   firstAirDate DateTime?
   voteAverage  Float     @default(0)
   voteCount    Int       @default(0)
-  status       Status? // Use the Status enum here
+  status       Status?
   episodeCount Int       @default(0)
-  mediaType    String // "tv" or "movie"
+  mediaType    String // "tv" | "movie"
   genreIds     Int[]
   keywords     Json?
   category     String?
@@ -67,20 +66,21 @@ model Episode {
   episodeNumber  Int       @map("episode_number")
   title          String
   thumbnail      String?
-  duration       Int? // in minutes
+  duration       Int?
   airDate        DateTime? @map("air_date") @db.Date
-  servers        Json      @default("[]") // Array of VideoServer
-  subtitles      Json      @default("[]") // Array of Subtitle
-  // TMDB Episode Metadata
+  servers        Json      @default("[]")
+  subtitles      Json      @default("[]")
+
   tmdbEpisodeId  Int?      @unique @map("tmdb_episode_id")
   overview       String?   @db.Text
   stillPath      String?   @map("still_path")
-  crew           Json? // Array of crew members
-  guestStars     Json?     @map("guest_stars") // Array of guest stars
+  crew           Json?
+  guestStars     Json?     @map("guest_stars")
   voteAverage    Float?    @map("vote_average")
   voteCount      Int?      @default(0) @map("vote_count")
   productionCode String?   @map("production_code")
   seasonNumber   Int?      @map("season_number")
+
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
 
@@ -104,7 +104,7 @@ model Genre {
 model AdminUser {
   id        Int      @id @default(autoincrement())
   username  String   @unique
-  password  String // hashed password
+  password  String
   email     String?  @unique
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

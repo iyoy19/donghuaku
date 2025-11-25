@@ -1,0 +1,9 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "VITE_TMDB_API_KEY": "@tmdb_api_key"
+  }
+}
