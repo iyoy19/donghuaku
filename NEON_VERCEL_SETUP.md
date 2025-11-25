@@ -92,6 +92,7 @@ Production (Vercel)
 ### 1. API Endpoints di `/api` Folder
 
 Sudah ada serverless functions untuk:
+
 - `/api/donghua` - Get all donghua from database
 - `/api/tmdb/search` - Search TMDB
 - `/api/tmdb/[type]/[id]` - Get TMDB detail
@@ -137,10 +138,10 @@ git push origin main
 
 Di **Vercel Project Settings → Environment Variables**, tambahkan:
 
-| Key | Value |
-|-----|-------|
-| `DATABASE_URL` | `postgresql://neondb_owner:...` (dari Neon) |
-| `VITE_TMDB_API_KEY` | Your TMDB API key |
+| Key                 | Value                                       |
+| ------------------- | ------------------------------------------- |
+| `DATABASE_URL`      | `postgresql://neondb_owner:...` (dari Neon) |
+| `VITE_TMDB_API_KEY` | Your TMDB API key                           |
 
 ⚠️ **JANGAN gunakan secret references (@database_url)**. Paste langsung nilai aslinya!
 
@@ -222,6 +223,7 @@ curl https://yourproject.vercel.app/api/health
 ```
 
 **Expected Response untuk `/api/donghua`:**
+
 ```json
 [
   {

@@ -34,10 +34,7 @@ async function fetchFromTMDB(endpoint: string) {
   return data;
 }
 
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCorsHeaders(res);
   res.setHeader("Content-Type", "application/json");
   if (handleOptions(req, res)) return;

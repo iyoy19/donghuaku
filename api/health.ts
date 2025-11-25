@@ -3,7 +3,10 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export default async function handler(_req: VercelRequest, res: VercelResponse) {
+export default async function handler(
+  _req: VercelRequest,
+  res: VercelResponse
+) {
   res.setHeader("Content-Type", "application/json");
   try {
     await prisma.$queryRaw`SELECT 1`;

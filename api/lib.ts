@@ -3,16 +3,12 @@ import { PrismaClient } from "@prisma/client";
 export const prisma = new PrismaClient();
 
 // Helper function to enrich donghua data
-export async function enrichDonghuaData(
-  donghua: any
-): Promise<any> {
+export async function enrichDonghuaData(donghua: any): Promise<any> {
   try {
     // Count released episodes
     const releasedEpisodes = donghua.episodes
       ? donghua.episodes.filter(
-          (ep: any) =>
-            ep.releaseDate &&
-            new Date(ep.releaseDate) <= new Date()
+          (ep: any) => ep.releaseDate && new Date(ep.releaseDate) <= new Date()
         ).length
       : 0;
 

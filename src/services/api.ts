@@ -166,11 +166,11 @@ class ApiService {
   }
 
   async getDonghuaById(id: number) {
-    return this.get<any>(`/api/donghua/${id}`);
+    return this.get<any>(`/api/donghua?id=${id}`);
   }
 
   async getEpisodesByDonghuaId(donghuaId: number) {
-    return this.get<any[]>(`/api/donghua/${donghuaId}/episodes`);
+    return this.get<any[]>(`/api/donghua?type=episodes&id=${donghuaId}`);
   }
 
   async getEpisodeById(episodeId: string) {
@@ -276,19 +276,19 @@ class ApiService {
 
   // Donghua section endpoints
   async getOngoingDonghua() {
-    return this.get<{ results: any[] }>("/api/donghua/ongoing");
+    return this.get<{ results: any[] }>("/api/donghua?type=ongoing");
   }
 
   async getLatestDonghua() {
-    return this.get<{ results: any[] }>("/api/donghua/latest");
+    return this.get<{ results: any[] }>("/api/donghua?type=latest");
   }
 
   async getTrendingDonghua() {
-    return this.get<{ results: any[] }>("/api/donghua/trending");
+    return this.get<{ results: any[] }>("/api/donghua?type=trending");
   }
 
   async getTopRatedDonghua() {
-    return this.get<{ results: any[] }>("/api/donghua/top-rated");
+    return this.get<{ results: any[] }>("/api/donghua?type=toprated");
   }
 
   async getRecommendations(donghuaId: number) {

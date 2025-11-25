@@ -1,10 +1,7 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { prisma, setCorsHeaders, handleOptions } from "../lib";
 
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCorsHeaders(res);
   res.setHeader("Content-Type", "application/json");
   if (handleOptions(req, res)) return;
