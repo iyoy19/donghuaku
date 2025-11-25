@@ -225,7 +225,8 @@ Jika mendapat error, berarti:
 
 ### "Error Memuat Data" - Invalid JSON Response
 
-**Problem**: 
+**Problem**:
+
 ```
 Unexpected token '<', "<!doctype "... is not valid JSON
 ```
@@ -233,6 +234,7 @@ Unexpected token '<', "<!doctype "... is not valid JSON
 Atau error memuat data di halaman
 
 **Penyebab**:
+
 - Backend Express server tidak berjalan
 - Frontend mencoba fetch dari `http://localhost:3001` tapi server sudah shutdown
 - Di Vercel: environment variable DATABASE_URL belum di-set dengan benar
@@ -240,6 +242,7 @@ Atau error memuat data di halaman
 **Solution**:
 
 **Untuk Development (localhost):**
+
 1. Pastikan backend server berjalan:
    ```bash
    npm run dev:server
@@ -252,6 +255,7 @@ Atau error memuat data di halaman
 4. Di VS Code terminal, check apakah ada error di backend
 
 **Untuk Production (Vercel):**
+
 1. Buka Vercel Project → Settings → Environment Variables
 2. Pastikan `DATABASE_URL` sudah di-set dengan nilai yang benar
 3. Pastikan tidak ada secret reference (`@database_url`) - harus nilai asli
@@ -277,4 +281,3 @@ Atau error memuat data di halaman
 
 - Update `API_PORT` di `.env`
 - Atau kill process yang menggunakan port
-

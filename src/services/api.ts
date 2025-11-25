@@ -48,13 +48,16 @@ class ApiService {
         cache: "no-store", // Prevent browser caching
       });
     } catch (fetchError) {
-      const errorMsg = fetchError instanceof Error ? fetchError.message : "Network error";
+      const errorMsg =
+        fetchError instanceof Error ? fetchError.message : "Network error";
       console.error("🔴 [API DEBUG] Fetch error:", {
         url,
         error: errorMsg,
-        hint: "Is backend server running? Check if port 3001 is accessible."
+        hint: "Is backend server running? Check if port 3001 is accessible.",
       });
-      throw new Error(`Cannot connect to API (${this.baseUrl}). Make sure backend server is running.`);
+      throw new Error(
+        `Cannot connect to API (${this.baseUrl}). Make sure backend server is running.`
+      );
     }
     // const duration = Date.now() - startTime;
 
@@ -62,10 +65,10 @@ class ApiService {
       // Try to get error message from response body
       let errorMessage = `API Error: ${response.status} ${response.statusText}`;
       let responseText = "";
-      
+
       try {
         responseText = await response.text();
-        
+
         // Check if response is HTML (error page or redirect)
         if (responseText.startsWith("<!") || responseText.includes("<html")) {
           errorMessage = `API Error ${response.status}: Backend returned HTML instead of JSON. Backend might be down or URL is wrong.`;
@@ -82,11 +85,13 @@ class ApiService {
       } catch (e) {
         // If parsing fails, use response text or default
         if (responseText) {
-          errorMessage = `API Error ${response.status}: ${responseText.substring(0, 100)}`;
+          errorMessage = `API Error ${
+            response.status
+          }: ${responseText.substring(0, 100)}`;
         }
         console.error("🔴 [API DEBUG] Failed to parse error response:", e);
       }
-      
+
       console.error("🔴 [API DEBUG] Request failed:", {
         url,
         method,
@@ -103,7 +108,7 @@ class ApiService {
       console.error("🔴 [API DEBUG] Invalid content-type:", {
         url,
         contentType,
-        hint: "Expected application/json but got " + contentType
+        hint: "Expected application/json but got " + contentType,
       });
       throw new Error("API returned invalid content-type. Expected JSON.");
     }
@@ -114,9 +119,11 @@ class ApiService {
     } catch (jsonError) {
       console.error("🔴 [API DEBUG] JSON parse error:", {
         url,
-        error: jsonError instanceof Error ? jsonError.message : "Unknown error"
+        error: jsonError instanceof Error ? jsonError.message : "Unknown error",
       });
-      throw new Error("Invalid JSON response from API. Backend might not be running correctly.");
+      throw new Error(
+        "Invalid JSON response from API. Backend might not be running correctly."
+      );
     }
   }
 
