@@ -74,6 +74,20 @@ app.get("/api/test-db", async (req, res) => {
   }
 });
 
+// Simple debug endpoint for Vercel verification
+app.get("/debug/db", async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.send("✅ DB CONNECTED - Prisma + Neon working!");
+  } catch (err) {
+    res
+      .status(500)
+      .send(
+        `❌ DB ERROR: ${err instanceof Error ? err.message : "Unknown error"}`
+      );
+  }
+});
+
 // Helper function to check if donghua is Kids category
 // Kids = genre ID 10762 (Kids) or genre name contains "Kids"/"Family"
 async function isKidsDonghua(donghua: any): Promise<boolean> {

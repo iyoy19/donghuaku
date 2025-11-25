@@ -102,22 +102,54 @@ git push origin main
 3. Import repository GitHub Anda
 4. Framework preset: Vite (akan terdeteksi otomatis)
 
-### 4. Environment Variables
+### 4. Environment Variables (PENTING! ⚠️)
 
-Di Vercel Project Settings → Environment Variables, tambahkan:
+Di **Vercel Project Settings → Environment Variables**, tambahkan:
 
+| Key                 | Value                                       |
+| ------------------- | ------------------------------------------- |
+| `DATABASE_URL`      | `postgresql://neondb_owner:...` (dari Neon) |
+| `VITE_TMDB_API_KEY` | Your TMDB API key                           |
+
+⚠️ **JANGAN gunakan secret references (@database_url)**. Paste langsung nilai aslinya!
+
+### 5. Verify vercel.json
+
+Pastikan `vercel.json` **TIDAK memiliki env section** dengan secret references:
+
+❌ **SALAH (hapus ini)**:
+
+```json
+{
+  "env": {
+    "DATABASE_URL": "@database_url"
+  }
+}
 ```
-DATABASE_URL = postgresql://...
-VITE_TMDB_API_KEY = your-api-key
+
+✅ **BENAR (seperti ini)**:
+
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
 ```
 
-### 5. Build Settings
+### 6. Build Settings
 
 - **Build Command**: `npm run build`
 - **Output Directory**: `dist`
 - **Install Command**: `npm install`
 
-### 6. Deploy
+### 7. Deploy
 
 Click "Deploy" dan tunggu build selesai.
 
@@ -128,27 +160,35 @@ Aplikasi akan live di domain Vercel (misalnya `https://yourproject.vercel.app`)
 
 ## ✅ Testing
 
-### Check Backend Connection
+### Testing di Development (Localhost)
 
 ```bash
+# Check health
 curl http://localhost:3001/health
-```
 
-Response:
-
-```json
-{
-  "status": "ok",
-  "database": "connected",
-  "timestamp": "2024-11-25T..."
-}
-```
-
-### Check Database Connection
-
-```bash
+# Check database connection
 curl http://localhost:3001/api/test-db
 ```
+
+### Testing di Vercel (Production)
+
+Setelah deploy, test dengan mengakses endpoint debug:
+
+```
+https://yourproject.vercel.app/debug/db
+```
+
+**Expected Response:**
+
+```
+✅ DB CONNECTED - Prisma + Neon working!
+```
+
+Jika mendapat error, berarti:
+
+1. Environment variable `DATABASE_URL` belum di-set di Vercel
+2. DATABASE_URL masih punya secret reference (@database_url)
+3. Neon project sedang down atau connection pooler penuh
 
 ## 📝 Notes
 

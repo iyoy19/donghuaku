@@ -1,51 +1,83 @@
 # Quick Start Guide
 
-## 🚀 Get Started in 3 Steps
+## 🚀 Get Started (Using Neon + Vercel)
 
-### 1. Start PostgreSQL Database
+### 1. Configure Environment Variables
+
+Copy `.env.example` to `.env`:
 
 ```bash
-npm run db:up
+cp .env.example .env
 ```
 
-This starts PostgreSQL in Docker with:
-- Database: `donghuaku_db`
-- User: `donghuaku_user`
-- Password: `donghuaku_password`
-- Port: `5432`
-
-### 2. Create `.env` File
-
-Create a `.env` file in the root directory:
+Edit `.env` with your Neon credentials:
 
 ```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=donghuaku_user
-DB_PASSWORD=donghuaku_password
-DB_NAME=donghuaku_db
+# From Neon Dashboard
+DATABASE_URL=postgresql://neondb_owner:password@ep-host.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
-API_PORT=3001
+# From TMDB
+VITE_TMDB_API_KEY=your-tmdb-api-key
+
+# Local development
 VITE_API_URL=http://localhost:3001
+API_PORT=3001
 ```
 
-### 3. Initialize Database & Start Servers
+### 2. Setup Database Schema
 
 ```bash
-# Install dependencies (if not done)
 npm install
 
-# Initialize database schema
-npm run db:init
+# Generate Prisma client
+npm run db:generate
 
-# Start backend server
+# Push schema to Neon
+npm run db:push
+
+# (Optional) Seed data
+npm run db:seed
+```
+
+### 3. Start Development Servers
+
+**Option A: Both servers at once**
+
+```bash
+npm run dev:all
+```
+
+**Option B: Separate terminals**
+
+Terminal 1:
+
+```bash
 npm run dev:server
+```
 
-# In another terminal, start frontend
+Terminal 2:
+
+```bash
 npm run dev
 ```
 
-Or run both together:
+Access at: `http://localhost:5175`
+
+## 🌐 Deployment to Vercel
+
+For complete Vercel + Neon setup, see [NEON_VERCEL_SETUP.md](./NEON_VERCEL_SETUP.md)
+
+Quick checklist:
+
+- [ ] Push to GitHub
+- [ ] Connect to Vercel
+- [ ] Add `DATABASE_URL` env var (NO @secret references!)
+- [ ] Add `VITE_TMDB_API_KEY` env var
+- [ ] Deploy
+
+Test deployment: `https://yourapp.vercel.app/debug/db` should show `✅ DB CONNECTED`
+
+## Or run both together:
 
 ```bash
 npm run dev:all
@@ -60,4 +92,3 @@ npm run dev:all
 ## 📚 Full Documentation
 
 See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for detailed instructions.
-
