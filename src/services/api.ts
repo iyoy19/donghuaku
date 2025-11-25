@@ -40,28 +40,53 @@ class ApiService {
     };
 
     // const startTime = Date.now();
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      cache: "no-store", // Prevent browser caching
-    });
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        ...options,
+        headers,
+        cache: "no-store", // Prevent browser caching
+      });
+    } catch (fetchError) {
+      const errorMsg = fetchError instanceof Error ? fetchError.message : "Network error";
+      console.error("🔴 [API DEBUG] Fetch error:", {
+        url,
+        error: errorMsg,
+        hint: "Is backend server running? Check if port 3001 is accessible."
+      });
+      throw new Error(`Cannot connect to API (${this.baseUrl}). Make sure backend server is running.`);
+    }
     // const duration = Date.now() - startTime;
 
     if (!response.ok) {
       // Try to get error message from response body
       let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+      let responseText = "";
+      
       try {
-        const errorData = await response.json();
-        console.error("🔴 [API DEBUG] Error response:", errorData);
-        if (errorData.error) {
-          errorMessage = `API Error: ${errorData.error}`;
-        } else if (errorData.message) {
-          errorMessage = `API Error: ${errorData.message}`;
+        responseText = await response.text();
+        
+        // Check if response is HTML (error page or redirect)
+        if (responseText.startsWith("<!") || responseText.includes("<html")) {
+          errorMessage = `API Error ${response.status}: Backend returned HTML instead of JSON. Backend might be down or URL is wrong.`;
+        } else {
+          // Try to parse as JSON
+          const errorData = JSON.parse(responseText);
+          console.error("🔴 [API DEBUG] Error response:", errorData);
+          if (errorData.error) {
+            errorMessage = `API Error: ${errorData.error}`;
+          } else if (errorData.message) {
+            errorMessage = `API Error: ${errorData.message}`;
+          }
         }
       } catch (e) {
-        // If JSON parsing fails, use default error message
+        // If parsing fails, use response text or default
+        if (responseText) {
+          errorMessage = `API Error ${response.status}: ${responseText.substring(0, 100)}`;
+        }
         console.error("🔴 [API DEBUG] Failed to parse error response:", e);
       }
+      
       console.error("🔴 [API DEBUG] Request failed:", {
         url,
         method,
@@ -72,8 +97,27 @@ class ApiService {
       throw new Error(errorMessage);
     }
 
-    const data = await response.json();
-    return data;
+    // Check response content-type
+    const contentType = response.headers.get("content-type");
+    if (!contentType?.includes("application/json")) {
+      console.error("🔴 [API DEBUG] Invalid content-type:", {
+        url,
+        contentType,
+        hint: "Expected application/json but got " + contentType
+      });
+      throw new Error("API returned invalid content-type. Expected JSON.");
+    }
+
+    try {
+      const data = await response.json();
+      return data;
+    } catch (jsonError) {
+      console.error("🔴 [API DEBUG] JSON parse error:", {
+        url,
+        error: jsonError instanceof Error ? jsonError.message : "Unknown error"
+      });
+      throw new Error("Invalid JSON response from API. Backend might not be running correctly.");
+    }
   }
 
   async get<T>(endpoint: string): Promise<T> {
