@@ -37,7 +37,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!q) {
         return res.status(400).json({ error: "Missing query parameter" });
       }
-      const data = await fetchFromTMDB(`/search/multi?query=${encodeURIComponent(q)}`);
+      const data = await fetchFromTMDB(
+        `/search/multi?query=${encodeURIComponent(q)}`
+      );
       return res.json(data);
     }
 

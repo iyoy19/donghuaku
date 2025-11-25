@@ -10,8 +10,8 @@ const getApiUrl = (): string => {
     return "http://localhost:3001";
   }
 
-  // For production (Vercel), use relative path to /api
-  return "/api";
+  // For production (Vercel), use empty string since routes are already /api/*
+  return "";
 };
 
 const API_URL = getApiUrl();
@@ -153,28 +153,28 @@ class ApiService {
       message?: string;
       version?: string;
       error?: string;
-    }>("/api/test-db");
+    }>("/test-db");
   }
 
   // Donghua endpoints
   async getAllDonghua(forceRefresh: boolean = false) {
     // Add timestamp to bypass cache if force refresh is needed
     const endpoint = forceRefresh
-      ? `/api/donghua?_t=${Date.now()}`
-      : "/api/donghua";
+      ? `/donghua?_t=${Date.now()}`
+      : "/donghua";
     return this.get<any[]>(endpoint);
   }
 
   async getDonghuaById(id: number) {
-    return this.get<any>(`/api/donghua?id=${id}`);
+    return this.get<any>(`/donghua?id=${id}`);
   }
 
   async getEpisodesByDonghuaId(donghuaId: number) {
-    return this.get<any[]>(`/api/donghua?type=episodes&id=${donghuaId}`);
+    return this.get<any[]>(`/donghua?type=episodes&id=${donghuaId}`);
   }
 
   async getEpisodeById(episodeId: string) {
-    return this.get<any>(`/api/episodes/${episodeId}`);
+    return this.get<any>(`/episodes/${episodeId}`);
   }
 
   async searchDonghua(params: {
@@ -191,7 +191,7 @@ class ApiService {
 
     const queryString = queryParams.toString();
     return this.get<any[]>(
-      `/api/search${queryString ? `?${queryString}` : ""}`
+      `/search${queryString ? `?${queryString}` : ""}`
     );
   }
 
@@ -199,11 +199,11 @@ class ApiService {
   async searchTMDB(query: string, type?: "movie" | "tv") {
     const params = new URLSearchParams({ query });
     if (type) params.append("type", type);
-    return this.get<any>(`/api/tmdb?${params.toString()}`);
+    return this.get<any>(`/tmdb?${params.toString()}`);
   }
 
   async getTMDBData(type: "movie" | "tv", id: number) {
-    return this.get<any>(`/api/tmdb?action=details&type=${type}&id=${id}`);
+    return this.get<any>(`/tmdb?action=details&type=${type}&id=${id}`);
   }
 
   async syncFromTMDB(data: {
@@ -219,7 +219,7 @@ class ApiService {
     firstAirDate?: string;
   }) {
     try {
-      const result = await this.post<any>("/api/tmdb/sync", data);
+      const result = await this.post<any>("/tmdb/sync", data);
       return result;
     } catch (error) {
       console.error("🔴 [API DEBUG] syncFromTMDB error:", error);
@@ -232,76 +232,76 @@ class ApiService {
   }
 
   async getTMDBCredits(type: "movie" | "tv", id: number) {
-    return this.get<any>(`/api/tmdb?action=credits&type=${type}&id=${id}`);
+    return this.get<any>(`/tmdb?action=credits&type=${type}&id=${id}`);
   }
 
   async getTMDBVideos(type: "movie" | "tv", id: number) {
-    return this.get<any>(`/api/tmdb?action=videos&type=${type}&id=${id}`);
+    return this.get<any>(`/tmdb?action=videos&type=${type}&id=${id}`);
   }
 
   async getTMDBEpisodeFull(tvId: number, season: number, episode: number) {
     return this.get<any>(
-      `/api/tmdb?action=episode&tvId=${tvId}&season=${season}&episode=${episode}`
+      `/tmdb?action=episode&tvId=${tvId}&season=${season}&episode=${episode}`
     );
   }
 
   // Admin endpoints
   async updateDonghua(id: number, data: any) {
-    return this.put<any>(`/api/admin/donghua/${id}`, data);
+    return this.put<any>(`/admin/donghua/${id}`, data);
   }
 
   async deleteDonghua(id: number) {
     return this.delete<{ success: boolean; message: string }>(
-      `/api/admin/donghua/${id}`
+      `/admin/donghua/${id}`
     );
   }
 
   async createEpisode(data: any) {
-    return this.post<any>("/api/admin/episodes", data);
+    return this.post<any>("/admin/episodes", data);
   }
 
   async updateEpisode(id: string, data: any) {
-    return this.put<any>(`/api/admin/episodes/${id}`, data);
+    return this.put<any>(`/admin/episodes/${id}`, data);
   }
 
   async deleteEpisode(id: string) {
     return this.delete<{ success: boolean; message: string }>(
-      `/api/admin/episodes/${id}`
+      `/admin/episodes/${id}`
     );
   }
 
   async getStatistics() {
-    return this.get<any>("/api/admin/statistics");
+    return this.get<any>("/admin/statistics");
   }
 
   // Donghua section endpoints
   async getOngoingDonghua() {
-    return this.get<{ results: any[] }>("/api/donghua?type=ongoing");
+    return this.get<{ results: any[] }>("/donghua?type=ongoing");
   }
 
   async getLatestDonghua() {
-    return this.get<{ results: any[] }>("/api/donghua?type=latest");
+    return this.get<{ results: any[] }>("/donghua?type=latest");
   }
 
   async getTrendingDonghua() {
-    return this.get<{ results: any[] }>("/api/donghua?type=trending");
+    return this.get<{ results: any[] }>("/donghua?type=trending");
   }
 
   async getTopRatedDonghua() {
-    return this.get<{ results: any[] }>("/api/donghua?type=toprated");
+    return this.get<{ results: any[] }>("/donghua?type=toprated");
   }
 
   async getRecommendations(donghuaId: number) {
     // Now uses database ID, not TMDB ID
-    return this.get<{ results: any[] }>(`/api/donghua/recommend/${donghuaId}`);
+    return this.get<{ results: any[] }>(`/donghua/recommend/${donghuaId}`);
   }
 
   async getDonghuaByGenre(genreName: string) {
-    return this.get<{ results: any[] }>(`/api/donghua/genre/${genreName}`);
+    return this.get<{ results: any[] }>(`/donghua/genre/${genreName}`);
   }
 
   async getKidsDonghua() {
-    return this.get<{ results: any[] }>("/api/donghua/kids");
+    return this.get<{ results: any[] }>("/donghua/kids");
   }
 
   // Admin: Import donghua from TMDB
@@ -315,7 +315,7 @@ class ApiService {
       imported: number;
       updated: number;
       errors: number;
-    }>("/api/admin/import/tmdb", {
+    }>("/admin/import/tmdb", {
       type,
       limit,
     });
